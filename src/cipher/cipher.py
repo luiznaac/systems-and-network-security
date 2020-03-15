@@ -1,6 +1,7 @@
 import sys
 
 from CipherInterface import CipherInterface
+from symmetric.CesarCipher import CesarCipher
 
 
 options = {
