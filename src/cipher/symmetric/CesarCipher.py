@@ -3,41 +3,35 @@ from CipherInterface import CipherInterface
 
 class CesarCipher(CipherInterface):
 
-    @staticmethod
-    def cipher(key, clear_text):
-        return CesarCipher.getCipherText(key, clear_text)
+    def cipher(self, key, clear_text):
+        return self.getCipherText(key, clear_text)
 
-    @staticmethod
-    def decipher(key, cipher_text):
+    def decipher(self, key, cipher_text):
         return 'Decipher Cesar'
 
-    @staticmethod
-    def getCipherText(key, clear_text):
+    def getCipherText(self, key, clear_text):
         cipher_text = ''
 
         for char in clear_text:
-            cipher_text = '{}{}'.format(cipher_text, CesarCipher.getCipherChar(key, char))
+            cipher_text = '{}{}'.format(cipher_text, self.getCipherChar(key, char))
 
         return cipher_text
 
-    @staticmethod
-    def getCipherChar(key, char):
-        if not CesarCipher.shouldCharBeCiphered(char):
+    def getCipherChar(self, key, char):
+        if not self.shouldCharBeCiphered(char):
             return char
 
         char_value = ord(char)
 
-        return chr(CesarCipher.getCipherCharValue(key, char_value))
+        return chr(self.getCipherCharValue(key, char_value))
 
-    @staticmethod
-    def shouldCharBeCiphered(char):
+    def shouldCharBeCiphered(self, char):
         char_value = ord(char)
         return (65 <= char_value <= 90) or (97 <= char_value <= 122)
 
-    @staticmethod
-    def getCipherCharValue(key, char_value):
+    def getCipherCharValue(self, key, char_value):
         base_value = 96
-        if 65 <= char_value <= 90:
+        if self.isCapitalLetter(char_value):
             base_value = 64
 
         cipher_value = char_value + int(key) - base_value
@@ -46,3 +40,6 @@ class CesarCipher(CipherInterface):
             return char_value + int(key) - 26 + base_value
 
         return cipher_value + base_value
+
+    def isCapitalLetter(self, char_value):
+        return 65 <= char_value <= 90

@@ -17,7 +17,7 @@ OUTPUTTEXT = 6
 
 
 def main():
-    cipher = getCipherClass()
+    cipher = getCipherInstance()
     option = getUserOption(cipher)
     key = getUserKey()
     input_text = getInputText()
@@ -25,9 +25,9 @@ def main():
     writeToFile(output_text)
 
 
-def getCipherClass() -> CipherInterface:
+def getCipherInstance() -> CipherInterface:
     cipher_name = getCipherClassName()
-    return globals()[cipher_name]
+    return globals()[cipher_name]()
 
 
 def getCipherClassName():
