@@ -30,11 +30,11 @@ class CesarCrack(CrackInterface):
 
     def sortCipherFrequency(self, cipher_frequency):
         sorted_frequency = {k: v for k, v in sorted(cipher_frequency.items(), key=lambda item: item[1])}
-        i = 0
+        i = sorted_frequency.__len__() - 1
 
         for char in sorted_frequency.keys():
             sorted_frequency.update({char: i})
-            i += 1
+            i -= 1
 
         return sorted_frequency
 
@@ -56,7 +56,11 @@ class CesarCrack(CrackInterface):
         return clear_frequency[index]
 
     def getClearFrequencyReference(self):
-        return [
+        clear_frequency = [
             'y', 'w', 'k', 'x', 'j', 'z', 'f', 'b', 'q', 'h', 'g', 'v', 'p',
             'l', 'c', 't', 'u', 'm', 'd', 'n', 'i', 'r', 's', 'o', 'e', 'a'
         ]
+
+        clear_frequency.reverse()
+
+        return clear_frequency
