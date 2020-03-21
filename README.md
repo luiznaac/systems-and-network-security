@@ -8,6 +8,9 @@ Options:
 - -d : decipher
 - -c : cipher
 
+Ciphers:
+- cesar
+
 Example to cipher a text using Cesar:
 
 `python cipher.py cesar -c -k 23 clear_text.txt cipher_text.txt`
