@@ -12,8 +12,8 @@ class CesarCipher(CipherInterface):
         return self.getClearText(key, cipher_text, char_array)
 
     def initializeCharArray(self):
-        char_array = self.getCharsInRange(ord('a'), ord('z'))
-        char_array += self.getCharsInRange(ord('A'), ord('Z'))
+        char_array = self.getCharsInRange(ord('A'), ord('Z'))
+        char_array += self.getCharsInRange(ord('a'), ord('z'))
         char_array += self.getCharsInRange(ord('0'), ord('9'))
 
         return char_array
@@ -30,9 +30,40 @@ class CesarCipher(CipherInterface):
         cipher_text = ''
 
         for char in clear_text:
+            char = self.normalizeChar(char)
             cipher_text = '{}{}'.format(cipher_text, self.getCipherChar(key, char, char_array))
 
         return cipher_text
+
+    def normalizeChar(self, char):
+        if self.isCapitalLetter(char):
+            char = chr(ord(char) + 32)
+
+        return self.higienizeChar(char)
+
+    def isCapitalLetter(self, char):
+        return ord('A') <= ord(char) <= ord('Z')
+
+    def higienizeChar(self, char):
+        char_map = {
+            'á': 'a', 'à': 'a', 'ã': 'a', 'â': 'a',
+            'Á': 'a', 'À': 'a', 'Ã': 'a', 'Â': 'a',
+            'é': 'e', 'ê': 'e',
+            'É': 'e', 'Ê': 'e',
+            'í': 'i',
+            'Í': 'i',
+            'ó': 'o', 'õ': 'o', 'ô': 'o',
+            'Ó': 'o', 'Õ': 'o', 'Ô': 'o',
+            'ú': 'u',
+            'Ú': 'u',
+            'ç': 'c',
+            'Ç': 'c',
+        }
+
+        if char in char_map:
+            return char_map[char]
+
+        return char
 
     def getCipherChar(self, key, char, char_array):
         if not self.shouldApplyKeyToChar(char):
@@ -49,10 +80,9 @@ class CesarCipher(CipherInterface):
 
     def getCipherCharIndex(self, key, clear_char_index, char_array_length):
         key = int(key) % char_array_length
-        char_array_length -= 1
         cipher_char_index = clear_char_index + key
 
-        if cipher_char_index > char_array_length:
+        if cipher_char_index >= char_array_length:
             return cipher_char_index - char_array_length
 
         return cipher_char_index
@@ -80,7 +110,6 @@ class CesarCipher(CipherInterface):
 
     def getClearCharIndex(self, key, cipher_char_index, char_array_length):
         key = int(key) % char_array_length
-        char_array_length -= 1
         clear_char_index = cipher_char_index - key
 
         if clear_char_index < 0:

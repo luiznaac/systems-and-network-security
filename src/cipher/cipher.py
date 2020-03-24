@@ -1,4 +1,5 @@
 import sys
+import io
 
 from CipherInterface import CipherInterface
 from symmetric.CesarCipher import CesarCipher
@@ -46,7 +47,7 @@ def getUserKey():
 
 def getInputText():
     filename = sys.argv[INPUTTEXT]
-    file = open(filename, 'r+')
+    file = io.open(filename, mode='r', encoding='utf-8')
     text = file.read()
     file.close()
     return text

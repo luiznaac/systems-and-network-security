@@ -5,9 +5,9 @@ class CesarCrack(CrackInterface):
 
     def crack(self, cipher_text):
         cipher_frequency = self.getCipherFrequency(cipher_text)
-        cipher_frequency = self.sortCipherFrequency(cipher_frequency)
+        sorted_cipher_frequency = self.sortCipherFrequency(cipher_frequency)
 
-        return self.getClearText(cipher_text, cipher_frequency)
+        return self.getClearText(cipher_text, sorted_cipher_frequency)
 
     def getCipherFrequency(self, cipher_text):
         cipher_frequecy = {}
