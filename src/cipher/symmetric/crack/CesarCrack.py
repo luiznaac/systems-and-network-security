@@ -53,7 +53,7 @@ class CesarCrack(CrackInterface):
         clear_frequency = self.getClearFrequencyReference()
         index = cipher_frequency.get(cipher_char)
 
-        return clear_frequency[index]
+        return clear_frequency[index] if index < len(clear_frequency) else '?'
 
     def getClearFrequencyReference(self):
         clear_frequency = [
