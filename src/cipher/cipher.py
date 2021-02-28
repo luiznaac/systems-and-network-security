@@ -3,6 +3,7 @@ import io
 
 from CipherInterface import CipherInterface
 from symmetric.CesarCipher import CesarCipher
+from symmetric.VernamCipher import VernamCipher
 
 
 options = {
