@@ -13,7 +13,8 @@ class VernamCipher(CipherInterface):
 
     def decipher(self, key_filename, cipher_text):
         key = self.loadKey(key_filename)
-        return self.getClearText(key, cipher_text)
+        char_array = CipherUtils.initializeCharArray()
+        return self.getClearText(key, cipher_text, char_array)
 
     def computeKey(self, text_length):
         key = []
@@ -42,15 +43,13 @@ class VernamCipher(CipherInterface):
         file = io.open(key_filename, mode='r', encoding='utf-8')
         text = file.read()
         file.close()
-        return text
+        return [int(single_key) for single_key in text.split(',')]
 
-    def getClearText(self, key, cipher_text):
+    def getClearText(self, key, cipher_text, char_array):
         clear_text = ''
 
-        for i in range(0, len(cipher_text)):
-            cipher_char = cipher_text[i]
-            char_key = ord(key[i])
-            clear_char = chr(ord(cipher_char) - char_key)
-            clear_text = '{}{}'.format(clear_text, clear_char)
+        for cipher_char in cipher_text:
+            char_key = key.pop(0)
+            clear_text = '{}{}'.format(clear_text, CipherUtils.getClearChar(char_key, cipher_char, char_array))
 
         return clear_text

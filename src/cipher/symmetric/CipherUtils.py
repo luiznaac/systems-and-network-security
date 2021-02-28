@@ -72,6 +72,30 @@ def getCipherCharIndex(key, clear_char_index, char_array_length):
     return cipher_char_index
 
 
+def getClearChar(key, char, char_array):
+    if not shouldApplyKeyToChar(char):
+        return char
+
+    cipher_char_index = char_array.index(char)
+    clear_char_index = getClearCharIndex(
+        key,
+        cipher_char_index,
+        len(char_array)
+    )
+
+    return char_array[clear_char_index]
+
+
+def getClearCharIndex(key, cipher_char_index, char_array_length):
+    key = int(key) % char_array_length
+    clear_char_index = cipher_char_index - key
+
+    if clear_char_index < 0:
+        return char_array_length + clear_char_index
+
+    return clear_char_index
+
+
 def shouldApplyKeyToChar(char):
     char_value = ord(char)
     return (ord('a') <= char_value <= ord('z')) or \
