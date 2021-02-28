@@ -1,5 +1,6 @@
 from CipherInterface import CipherInterface
 import random
+import io
 
 class VernamCipher(CipherInterface):
 
@@ -9,7 +10,8 @@ class VernamCipher(CipherInterface):
         return self.getCipherText(key, clear_text)
 
     def decipher(self, key_filename, cipher_text):
-        pass
+        key = self.loadKey(key_filename)
+        return self.getClearText(key, cipher_text)
 
     def computeKey(self, text_length):
         key = ''
@@ -34,3 +36,20 @@ class VernamCipher(CipherInterface):
             cipher_text = '{}{}'.format(cipher_text, cipher_char)
 
         return cipher_text
+
+    def loadKey(self, key_filename):
+        file = io.open(key_filename, mode='r', encoding='utf-8')
+        text = file.read()
+        file.close()
+        return text
+
+    def getClearText(self, key, cipher_text):
+        clear_text = ''
+
+        for i in range(0, len(cipher_text)):
+            cipher_char = cipher_text[i]
+            char_key = ord(key[i])
+            clear_char = chr(ord(cipher_char) - char_key)
+            clear_text = '{}{}'.format(clear_text, clear_char)
+
+        return clear_text
