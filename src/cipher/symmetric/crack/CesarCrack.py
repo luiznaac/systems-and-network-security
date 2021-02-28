@@ -1,4 +1,6 @@
 from CrackInterface import CrackInterface
+from symmetric import CipherUtils
+from symmetric.CesarCipher import CesarCipher
 
 
 class CesarCrack(CrackInterface):
@@ -6,8 +8,9 @@ class CesarCrack(CrackInterface):
     def crack(self, cipher_text):
         cipher_frequency = self.getCipherFrequency(cipher_text)
         sorted_cipher_frequency = self.sortCipherFrequency(cipher_frequency)
+        char_with_most_occurrences = sorted_cipher_frequency.pop()
 
-        return self.getClearText(cipher_text, sorted_cipher_frequency)
+        return self.getClearText(cipher_text, char_with_most_occurrences)
 
     def getCipherFrequency(self, cipher_text):
         cipher_frequecy = {}
@@ -36,15 +39,19 @@ class CesarCrack(CrackInterface):
             sorted_frequency.update({char: i})
             i -= 1
 
-        return sorted_frequency
+        return list(sorted_frequency)
 
-    def getClearText(self, cipher_text, cipher_frequency):
-        clear_text = ''
+    def getClearText(self, cipher_text, char_with_most_occurrences):
+        cracked_key = self.crackKey(char_with_most_occurrences)
 
-        for cipher_char in cipher_text:
-            clear_text = '{}{}'.format(clear_text, self.getClearChar(cipher_char, cipher_frequency))
+        return CesarCipher().decipher(cracked_key, cipher_text)
 
-        return clear_text
+    def crackKey(self, char_with_most_occurrences):
+        char_array = CipherUtils.initializeCharArray()
+        cipher_index = char_array.index(char_with_most_occurrences)
+        clear_index = char_array.index(self.getMostOccuryingClearLetter())
+
+        return abs(cipher_index - clear_index)
 
     def getClearChar(self, cipher_char, cipher_frequency):
         if not self.shouldConsiderChar(cipher_char):
@@ -54,6 +61,9 @@ class CesarCrack(CrackInterface):
         index = cipher_frequency.get(cipher_char)
 
         return clear_frequency[index] if index < len(clear_frequency) else '?'
+
+    def getMostOccuryingClearLetter(self):
+        return 'a'
 
     def getClearFrequencyReference(self):
         clear_frequency = [
