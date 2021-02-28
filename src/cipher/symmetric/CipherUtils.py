@@ -46,3 +46,34 @@ def higienizeChar(char):
         return char_map[char]
 
     return char
+
+
+def getCipherChar(key, char, char_array):
+    if not shouldApplyKeyToChar(char):
+        return char
+
+    clear_char_index = char_array.index(char)
+    cipher_char_index = getCipherCharIndex(
+        key,
+        clear_char_index,
+        len(char_array)
+    )
+
+    return char_array[cipher_char_index]
+
+
+def getCipherCharIndex(key, clear_char_index, char_array_length):
+    key = int(key) % char_array_length
+    cipher_char_index = clear_char_index + key
+
+    if cipher_char_index >= char_array_length:
+        return cipher_char_index - char_array_length
+
+    return cipher_char_index
+
+
+def shouldApplyKeyToChar(char):
+    char_value = ord(char)
+    return (ord('a') <= char_value <= ord('z')) or \
+           (ord('A') <= char_value <= ord('Z')) or \
+           (ord('0') <= char_value <= ord('9'))
