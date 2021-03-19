@@ -33,6 +33,7 @@ class handler(BaseHTTPRequestHandler):
 
         if self.path == '/login':
             user = User(self.parse_post_request())
+            user.persist()
 
         self.wfile.write(bytes('ok', "utf8"))
 
