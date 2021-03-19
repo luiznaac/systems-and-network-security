@@ -31,12 +31,15 @@ class handler(BaseHTTPRequestHandler):
         self.send_header('Content-type','text/html')
         self.end_headers()
 
-        message = 'ok'
-
         if self.path == '/login':
-            message = 'user created'
+            user = User(self.parse_post_request())
 
-        self.wfile.write(bytes(message, "utf8"))
+        self.wfile.write(bytes('ok', "utf8"))
+
+
+    def parse_post_request(self):
+        content_len = int(self.headers.get('content-length', 0))
+        return {param.split('=')[0]: param.split('=')[1] for param in self.rfile.read(content_len).decode('utf-8').split('&')}
 
 
 def run(server_class=HTTPServer, handler_class=handler):
