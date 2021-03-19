@@ -3,3 +3,4 @@ venv
 *.pyc
 *.txt
 *.dat
+.DS_Store
