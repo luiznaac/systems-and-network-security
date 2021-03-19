@@ -2,28 +2,29 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from pprint import pprint
 import io
 import json
-from User import User
+from User import User, loadUser
 
 
-USERNAME = 1
-USERKEY = 2
-INPUTTEXT = 3
+logged_user = None
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
         self.send_header('Content-type', 'text/html')
         self.end_headers()
+        page = ''
+
+        if self.path == '/signup':
+            file = io.open('signup.html', mode='r', encoding='utf-8')
+            page = file.read()
+            file.close()
 
         if self.path == '/login':
             file = io.open('login.html', mode='r', encoding='utf-8')
-            login_page = file.read()
+            page = file.read()
             file.close()
-            self.wfile.write(bytes(login_page, "utf8"))
-            return
 
-        message = "Ok"
-        self.wfile.write(bytes(message, "utf8"))
+        self.wfile.write(bytes(page, "utf8"))
 
 
     def do_POST(self):
@@ -31,9 +32,22 @@ class handler(BaseHTTPRequestHandler):
         self.send_header('Content-type','text/html')
         self.end_headers()
 
-        if self.path == '/login':
+        if self.path == '/signup':
             user = User(self.parse_post_request())
             user.persist()
+
+        if self.path == '/login':
+            user = loadUser(self.parse_post_request())
+
+            if user is None:
+                self.wfile.write(bytes('user nor found', "utf8"))
+                return
+
+            if user == 'wrong password':
+                self.wfile.write(bytes(user, "utf8"))
+                return
+
+            setLoggedUser(user)
 
         self.wfile.write(bytes('ok', "utf8"))
 
@@ -47,6 +61,16 @@ def run(server_class=HTTPServer, handler_class=handler):
     server_address = ('', 8000)
     httpd = server_class(server_address, handler_class)
     httpd.serve_forever()
+
+
+def setLoggedUser(user):
+    global logged_user
+    logged_user = user
+
+
+def getLoggedUser():
+    global logged_user
+    return logged_user
 
 
 if __name__ == '__main__':
