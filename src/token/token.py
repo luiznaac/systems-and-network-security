@@ -1,8 +1,7 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from pprint import pprint
 import io
-import json
 from User import User, loadUser
+from TokenGenerator import TokenGenerator
 
 
 logged_user = None
@@ -23,6 +22,10 @@ class handler(BaseHTTPRequestHandler):
             file = io.open('login.html', mode='r', encoding='utf-8')
             page = file.read()
             file.close()
+
+        if self.path == '/token':
+            token_generator = TokenGenerator(getLoggedUser().seed_password)
+            page = ','.join(token_generator.getActualTokens())
 
         self.wfile.write(bytes(page, "utf8"))
 
@@ -48,8 +51,6 @@ class handler(BaseHTTPRequestHandler):
                 return
 
             setLoggedUser(user)
-
-        self.wfile.write(bytes('ok', "utf8"))
 
 
     def parse_post_request(self):
