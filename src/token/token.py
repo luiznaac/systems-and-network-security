@@ -25,7 +25,11 @@ class handler(BaseHTTPRequestHandler):
 
         if self.path == '/token':
             token_generator = TokenGenerator(getLoggedUser().seed_password)
-            page = ','.join(token_generator.getActualTokens())
+            tokens = '<br>'.join(token_generator.getActualTokens())
+            file = io.open('tokens.html', mode='r', encoding='utf-8')
+            page = file.read()
+            file.close()
+            page = page.replace(':tokens', tokens)
 
         self.wfile.write(bytes(page, "utf8"))
 
