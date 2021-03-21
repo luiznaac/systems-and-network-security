@@ -9,17 +9,22 @@ error_messages = []
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
-        self.send_response(200)
-        self.send_header('Content-type', 'text/html')
-        self.end_headers()
         page = ''
 
         if self.path == '/signup':
+            if getLoggedUser() is not None:
+                self.send_response(303)
+                self.send_header('Location', 'http://localhost:8000/token')
+                self.end_headers()
             file = io.open('signup.html', mode='r', encoding='utf-8')
             page = file.read()
             file.close()
 
         if self.path == '/login':
+            if getLoggedUser() is not None:
+                self.send_response(303)
+                self.send_header('Location', 'http://localhost:8000/token')
+                self.end_headers()
             file = io.open('login.html', mode='r', encoding='utf-8')
             page = file.read().replace(':message', getErrorMessages())
             file.close()
@@ -32,6 +37,9 @@ class handler(BaseHTTPRequestHandler):
             file.close()
             page = page.replace(':tokens', tokens)
 
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html')
+        self.end_headers()
         self.wfile.write(bytes(page, "utf8"))
 
 
@@ -45,20 +53,20 @@ class handler(BaseHTTPRequestHandler):
 
             if user is None:
                 setErrorMessage('User not found')
-                self.send_response(301)
+                self.send_response(303)
                 self.send_header('Location', 'http://localhost:8000/login')
                 self.end_headers()
                 return
 
             if user == 'wrong password':
                 setErrorMessage('Wrong password')
-                self.send_response(301)
+                self.send_response(303)
                 self.send_header('Location', 'http://localhost:8000/login')
                 self.end_headers()
                 return
 
             setLoggedUser(user)
-            self.send_response(301)
+            self.send_response(303)
             self.send_header('Location', 'http://localhost:8000/token')
             self.end_headers()
 
