@@ -64,6 +64,9 @@ class handler(BaseHTTPRequestHandler):
         if self.path == '/signup':
             user = User(self.parse_post_request())
             user.persist()
+            self.send_response(303)
+            self.send_header('Location', 'http://localhost:8000/login')
+            self.end_headers()
 
         if self.path == '/login':
             user = loadUser(self.parse_post_request())
