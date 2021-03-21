@@ -16,6 +16,7 @@ class handler(BaseHTTPRequestHandler):
                 self.send_response(303)
                 self.send_header('Location', 'http://localhost:8000/token')
                 self.end_headers()
+                return
             file = io.open('signup.html', mode='r', encoding='utf-8')
             page = file.read()
             file.close()
@@ -25,11 +26,17 @@ class handler(BaseHTTPRequestHandler):
                 self.send_response(303)
                 self.send_header('Location', 'http://localhost:8000/token')
                 self.end_headers()
+                return
             file = io.open('login.html', mode='r', encoding='utf-8')
             page = file.read().replace(':message', getErrorMessages())
             file.close()
 
         if self.path == '/token':
+            if getLoggedUser() is None:
+                self.send_response(303)
+                self.send_header('Location', 'http://localhost:8000/login')
+                self.end_headers()
+                return
             token_generator = TokenGenerator(getLoggedUser().seed_password)
             tokens = '<br>'.join(token_generator.getActualTokens())
             file = io.open('tokens.html', mode='r', encoding='utf-8')
