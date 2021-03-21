@@ -35,10 +35,6 @@ class handler(BaseHTTPRequestHandler):
 
 
     def do_POST(self):
-        self.send_response(200)
-        self.send_header('Content-type','text/html')
-        self.end_headers()
-
         if self.path == '/signup':
             user = User(self.parse_post_request())
             user.persist()
@@ -47,14 +43,23 @@ class handler(BaseHTTPRequestHandler):
             user = loadUser(self.parse_post_request())
 
             if user is None:
+                self.send_response(200)
+                self.send_header('Content-type', 'text/html')
+                self.end_headers()
                 self.wfile.write(bytes('user nor found', "utf8"))
                 return
 
             if user == 'wrong password':
-                self.wfile.write(bytes(user, "utf8"))
+                self.send_response(200)
+                self.send_header('Content-type', 'text/html')
+                self.end_headers()
+                self.wfile.write(bytes('wrong password', "utf8"))
                 return
 
             setLoggedUser(user)
+            self.send_response(301)
+            self.send_header('Location', 'http://localhost:8000/token')
+            self.end_headers()
 
 
     def parse_post_request(self):
