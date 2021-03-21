@@ -5,6 +5,7 @@ from TokenGenerator import TokenGenerator
 
 
 logged_user = None
+error_messages = []
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -20,7 +21,7 @@ class handler(BaseHTTPRequestHandler):
 
         if self.path == '/login':
             file = io.open('login.html', mode='r', encoding='utf-8')
-            page = file.read()
+            page = file.read().replace(':message', getErrorMessages())
             file.close()
 
         if self.path == '/token':
@@ -43,17 +44,17 @@ class handler(BaseHTTPRequestHandler):
             user = loadUser(self.parse_post_request())
 
             if user is None:
-                self.send_response(200)
-                self.send_header('Content-type', 'text/html')
+                setErrorMessage('User not found')
+                self.send_response(301)
+                self.send_header('Location', 'http://localhost:8000/login')
                 self.end_headers()
-                self.wfile.write(bytes('user nor found', "utf8"))
                 return
 
             if user == 'wrong password':
-                self.send_response(200)
-                self.send_header('Content-type', 'text/html')
+                setErrorMessage('Wrong password')
+                self.send_response(301)
+                self.send_header('Location', 'http://localhost:8000/login')
                 self.end_headers()
-                self.wfile.write(bytes('wrong password', "utf8"))
                 return
 
             setLoggedUser(user)
@@ -81,6 +82,16 @@ def setLoggedUser(user):
 def getLoggedUser():
     global logged_user
     return logged_user
+
+
+def setErrorMessage(message):
+    error_messages.append(message)
+
+
+def getErrorMessages():
+    messages = ','.join(error_messages)
+    error_messages.clear()
+    return messages
 
 
 if __name__ == '__main__':
