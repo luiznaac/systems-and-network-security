@@ -77,6 +77,12 @@ class handler(BaseHTTPRequestHandler):
             self.send_header('Location', 'http://localhost:8000/token')
             self.end_headers()
 
+        if self.path == '/logout':
+            setLoggedUser(None)
+            self.send_response(303)
+            self.send_header('Location', 'http://localhost:8000/login')
+            self.end_headers()
+
 
     def parse_post_request(self):
         content_len = int(self.headers.get('content-length', 0))
