@@ -11,7 +11,17 @@ class handler(BaseHTTPRequestHandler):
     def do_GET(self):
         page = ''
 
-        if self.path == '/signup':
+        if self.path == '/':
+            if getLoggedUser() is not None:
+                self.send_response(303)
+                self.send_header('Location', 'http://localhost:8000/token')
+                self.end_headers()
+                return
+            file = io.open('index.html', mode='r', encoding='utf-8')
+            page = file.read().replace(':message', getErrorMessages())
+            file.close()
+
+        if self.path.replace('?', '') == '/signup':
             if getLoggedUser() is not None:
                 self.send_response(303)
                 self.send_header('Location', 'http://localhost:8000/token')
@@ -21,7 +31,7 @@ class handler(BaseHTTPRequestHandler):
             page = file.read()
             file.close()
 
-        if self.path == '/login':
+        if self.path.replace('?', '') == '/login':
             if getLoggedUser() is not None:
                 self.send_response(303)
                 self.send_header('Location', 'http://localhost:8000/token')
@@ -80,7 +90,7 @@ class handler(BaseHTTPRequestHandler):
         if self.path == '/logout':
             setLoggedUser(None)
             self.send_response(303)
-            self.send_header('Location', 'http://localhost:8000/login')
+            self.send_header('Location', 'http://localhost:8000')
             self.end_headers()
 
 
