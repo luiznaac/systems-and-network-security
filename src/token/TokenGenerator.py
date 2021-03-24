@@ -13,7 +13,7 @@ class TokenGenerator:
 
         tokens = []
         for i in range(0, 6):
-            generated_token = str(int.from_bytes(random.randbytes(8), 'big'))
+            generated_token = str(random.randint(0, 999999))
             tokens.append(generated_token[0:6].zfill(6))
 
         return tokens

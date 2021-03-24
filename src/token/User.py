@@ -10,9 +10,12 @@ class User:
 
     def persist(self):
         file = open('users/' + self.username, 'w+')
-        file.write(generateHash(self.seed_password) + '\n')
         file.write(generateHash(self.password))
         file.close()
+        file = open('seeds/' + self.username, 'w+')
+        file.write(generateHash(self.seed_password))
+        file.close()
+
 
 
 def generateHash(entry):
@@ -27,7 +30,6 @@ def loadUser(parameters):
     if info == '':
         return None
 
-    info = info.split('\n')
     user_info = {
         'username': parameters['username'],
         'seed_password': info[0],
@@ -43,8 +45,11 @@ def loadUser(parameters):
 def getFileInfo(username):
     try:
         file = io.open('users/' + username, mode='r', encoding='utf-8')
-        text = file.read()
+        password = file.read()
         file.close()
-        return text
+        file = io.open('seeds/' + username, mode='r', encoding='utf-8')
+        seed = file.read()
+        file.close()
+        return [password, seed]
     except:
         return ''

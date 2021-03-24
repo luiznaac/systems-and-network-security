@@ -17,7 +17,7 @@ class handler(BaseHTTPRequestHandler):
                 self.send_header('Location', 'http://localhost:8000/token')
                 self.end_headers()
                 return
-            file = io.open('index.html', mode='r', encoding='utf-8')
+            file = io.open('pages/token/index.html', mode='r', encoding='utf-8')
             page = file.read().replace(':message', getErrorMessages())
             file.close()
 
@@ -27,7 +27,7 @@ class handler(BaseHTTPRequestHandler):
                 self.send_header('Location', 'http://localhost:8000/token')
                 self.end_headers()
                 return
-            file = io.open('signup.html', mode='r', encoding='utf-8')
+            file = io.open('pages/token/signup.html', mode='r', encoding='utf-8')
             page = file.read()
             file.close()
 
@@ -37,7 +37,7 @@ class handler(BaseHTTPRequestHandler):
                 self.send_header('Location', 'http://localhost:8000/token')
                 self.end_headers()
                 return
-            file = io.open('login.html', mode='r', encoding='utf-8')
+            file = io.open('pages/token/login.html', mode='r', encoding='utf-8')
             page = file.read().replace(':message', getErrorMessages())
             file.close()
 
@@ -49,7 +49,7 @@ class handler(BaseHTTPRequestHandler):
                 return
             token_generator = TokenGenerator(getLoggedUser().seed_password)
             tokens = '<br>'.join(token_generator.getActualTokens())
-            file = io.open('tokens.html', mode='r', encoding='utf-8')
+            file = io.open('pages/token/tokens.html', mode='r', encoding='utf-8')
             page = file.read()
             file.close()
             page = page.replace(':tokens', tokens)
