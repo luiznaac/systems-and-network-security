@@ -50,6 +50,6 @@ def getFileInfo(username):
         file = io.open('seeds/' + username, mode='r', encoding='utf-8')
         seed = file.read()
         file.close()
-        return [password, seed]
+        return [seed, password]
     except:
         return ''
