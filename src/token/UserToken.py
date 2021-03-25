@@ -2,7 +2,7 @@ import io
 from TokenGenerator import TokenGenerator
 from datetime import datetime
 
-used_tokens = {}
+used_token = {}
 
 class UserToken:
 
@@ -14,38 +14,31 @@ class UserToken:
         seed = getSeedPassword(self.username)
 
         if seed == '':
-            return None
+            return 'not found'
 
         valid_tokens = TokenGenerator(seed).getActualTokens()
-        used_tokens_in_minute = getUsedTokens()
 
-        if self.token in valid_tokens and self.token not in used_tokens_in_minute:
-            setUsedToken(self.token)
-            print(getUsedTokens())
+        if self.token in valid_tokens and valid_tokens.index(self.token) < getUsedToken():
+            setUsedToken(valid_tokens.index(self.token))
+            print(getUsedToken())
             return True
 
         return False
 
 
-def getUsedTokens():
+def getUsedToken():
     now = datetime.now()
     date_time = now.strftime("Y%m%d%%H%M")
 
-    if date_time in used_tokens.keys():
-        return used_tokens[date_time]
+    if date_time in used_token.keys():
+        return used_token[date_time]
 
-    return []
+    return 6
 
-def setUsedToken(token):
+def setUsedToken(token_index):
     now = datetime.now()
     date_time = now.strftime("Y%m%d%%H%M")
-
-    if date_time in used_tokens.keys():
-        used_token_in_minute = used_tokens[date_time]
-        used_token_in_minute.append(token)
-        return
-
-    used_tokens[date_time] = [token]
+    used_token[date_time] = token_index
 
 
 def getSeedPassword(username):

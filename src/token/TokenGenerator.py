@@ -1,5 +1,5 @@
-import random
 from datetime import datetime
+import hashlib
 
 class TokenGenerator:
 
@@ -9,11 +9,13 @@ class TokenGenerator:
     def getActualTokens(self):
         now = datetime.now()
         date_time = now.strftime("Y%m%d%%H%M")
-        random.seed(self.seed + date_time)
+        generator = hashlib.sha256()
+        generator.update(bytes(self.seed + date_time, 'utf-8'))
 
         tokens = []
         for i in range(0, 6):
-            generated_token = str(random.randint(0, 999999))
-            tokens.append(generated_token[0:6].zfill(6))
+            generated_token = generator.digest()
+            tokens.append(str(int.from_bytes(generated_token[0:4], 'big'))[0:6])
+            generator.update(generated_token)
 
         return tokens
