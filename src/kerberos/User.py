@@ -12,9 +12,7 @@ class User:
 
 
 def load_user(parameters):
-    user_info = {
-        'username': parameters['username'],
-        'password': utils.load_file('users', parameters['username'])[0],
-    }
+    username = parameters['username']
+    password = utils.load_file('users', parameters['username'])[0]
 
-    return User(user_info)
+    return User(username, password)
