@@ -1,6 +1,7 @@
 import io
 import hashlib
 import des
+import base64
 
 
 def persist_txt(path, filename, content):
@@ -24,9 +25,12 @@ def generate_hash(entry):
 
 def des_encrypt(data, key):
     des_key = des.DesKey(bytes(key, 'utf8'))
-    return des_key.encrypt(bytes(data, 'utf8'), initial=None, padding=True)
+    encrypted_data = des_key.encrypt(bytes(data, 'utf8'), initial=None, padding=True)
+    return str(base64.b64encode(encrypted_data), 'utf8')
 
 
 def des_decrypt(data, key):
     des_key = des.DesKey(bytes(key, 'utf8'))
-    return des_key.decrypt(data, initial=None, padding=True)
+    encrypted_data = base64.b64decode(data)
+    decrypted_data = des_key.decrypt(encrypted_data, initial=None, padding=True)
+    return str(decrypted_data, 'utf8')
