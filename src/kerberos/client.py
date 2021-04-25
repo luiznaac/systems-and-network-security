@@ -1,10 +1,18 @@
 import json
 import requests
+from User import User, load_user
 
 base_server_address = 'http://localhost:'
+username = None
+password = None
 
 
 def run():
+    global username, password
+    username = str(input('Username: '))
+    password = str(input('Password: '))
+    user = User(username, password)
+    user.persist()
     while True:
         print('Actions:')
         desired_action = int(input('Desired action: '))
