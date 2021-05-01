@@ -11,7 +11,7 @@ def persist_txt(path, filename, content):
 
 
 def load_file(path, filename):
-    file = io.open(path + '/' + filename, mode='r', encoding='utf-8')
+    file = io.open(path + '/' + filename + '.txt', mode='r', encoding='utf-8')
     content = file.read()
     file.close()
     return content
