@@ -27,6 +27,7 @@ def run():
         print('Actions:')
         print('1 - Authenticate by authentication service')
         print('2 - Request ticket by ticket granting service')
+        print('3 - Execute action by resource service')
         desired_action = int(input('Desired action: '))
         execute_action(desired_action)
 
@@ -38,11 +39,14 @@ def execute_action(action):
     if action == 2:
         ticket_granting_service()
         return
+    if action == 3:
+        resource_service()
+        return
 
 
 def auth_service():
     global desired_service, desired_time, tgs_password, tgs_ticket
-    desired_service = int(input('Desired resource: '))
+    desired_service = int(input('Desired service: '))
     desired_time = int(input('Desired time in minutes: '))
     request_payload = build_m1()
     response = make_request_to_server('auth_service', '/get_ticket', request_payload)
@@ -92,6 +96,30 @@ def build_m3():
     }
 
 
+def resource_service():
+    service_id = str(input('Desired service: '))
+    desired_resource = str(input('Desired resource: '))
+    request_payload = build_m5(desired_resource)
+    response = make_request_to_server('service_' + service_id, '/execute_action', request_payload)
+
+    payload = json.loads(utils.des_decrypt(response['payload'], service_password))
+    print(payload['response'])
+
+
+def build_m5(resource):
+    request = {
+        'client_id': username,
+        'expire_at': expire_at,
+        'resource': resource,
+        'proof_number': random.randint(0, 9999),
+    }
+
+    return {
+        'request': utils.des_encrypt(json.dumps(request), service_password),
+        'ticket': service_ticket,
+    }
+
+
 def make_request_to_server(target, request, request_content):
     url = resolve_target_address(target) + request
     response = requests.post(url, json=request_content)
@@ -103,6 +131,7 @@ def resolve_target_address(target):
     return base_server_address + {
         'auth_service': '7000',
         'ticket_granting_service': '8000',
+        'service_1': '9001',
     }[target]
 
 
