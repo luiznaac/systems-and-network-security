@@ -2,6 +2,7 @@ import io
 import hashlib
 import des
 import base64
+import json
 
 
 def persist_txt(path, filename, content):
@@ -34,3 +35,13 @@ def des_decrypt(data, key):
     encrypted_data = base64.b64decode(data)
     decrypted_data = des_key.decrypt(encrypted_data, initial=None, padding=True)
     return str(decrypted_data, 'utf8')
+
+
+def parse_received_request(request):
+    content_len = int(request.headers.get('content-length', 0))
+    return json.loads(request.rfile.read(content_len).decode('utf-8'))
+
+
+def get_request_params(password, request_payload):
+    params_json = des_decrypt(request_payload, password)
+    return json.loads(params_json)

@@ -9,7 +9,7 @@ auth_tgs_password = None
 class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         if self.path == '/get_ticket':
-            request = self.parse_received_request()
+            request = utils.parse_received_request(self)
             print(request['client_id'] + ' requested a tgs ticket')
             response = generate_m2(request)
 
@@ -18,10 +18,6 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(bytes(json.dumps(response), 'utf8'))
 
-    def parse_received_request(self):
-        content_len = int(self.headers.get('content-length', 0))
-        return json.loads(self.rfile.read(content_len).decode('utf-8'))
-
     def log_message(self, format, *args):
         pass
 
@@ -29,7 +25,7 @@ class Handler(BaseHTTPRequestHandler):
 def generate_m2(request):
     client_id = request['client_id']
     client_password = utils.load_file('users', client_id)
-    params = get_request_params(client_password, request['request'])
+    params = utils.get_request_params(client_password, request['request'])
 
     client_tgs_password = generate_client_tgs_password()
 
@@ -48,11 +44,6 @@ def generate_m2(request):
         'payload': utils.des_encrypt(json.dumps(payload), client_password),
         'ticket': utils.des_encrypt(json.dumps(ticket), auth_tgs_password),
     }
-
-
-def get_request_params(client_password, request_payload):
-    params_json = utils.des_decrypt(request_payload, client_password)
-    return json.loads(params_json)
 
 
 def generate_client_tgs_password():
