@@ -4,7 +4,7 @@ import random
 from datetime import datetime, timedelta
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-tgs_service_password = None
+tgs_service_password = []
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -43,7 +43,7 @@ def generate_m4(request):
 
     return {
         'payload': utils.des_encrypt(json.dumps(payload), client_tgs_password),
-        'ticket': utils.des_encrypt(json.dumps(ticket), tgs_service_password),
+        'ticket': utils.des_encrypt(json.dumps(ticket), tgs_service_password[params['service_id'] - 1]),
     }
 
 
@@ -59,16 +59,17 @@ def generate_client_service_password():
     return utils.generate_hash(password)
 
 
-def generate_tgs_service_password():
+def generate_tgs_service_password(service_id):
     global tgs_service_password
-    print('Generating password between tgs and services')
+    print('Generating password between tgs and service ' + str(service_id))
     password = str(random.randint(0, 9999))
-    tgs_service_password = utils.generate_hash(password)
-    utils.persist_txt('tgs_service', 'our_secret', tgs_service_password)
+    tgs_service_password.append(utils.generate_hash(password))
+    utils.persist_txt('tgs_service', 'our_secret_' + str(service_id), tgs_service_password[service_id - 1])
 
 
 def run(server_class=HTTPServer, handler_class=Handler):
-    generate_tgs_service_password()
+    generate_tgs_service_password(1)
+    generate_tgs_service_password(2)
     server_address = ('', 8000)
     httpd = server_class(server_address, handler_class)
     print('Ticket granting service initialized')

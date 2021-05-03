@@ -49,7 +49,7 @@ def auth_service():
     desired_service = int(input('Desired service: '))
     desired_time = int(input('Desired time in minutes: '))
     request_payload = build_m1()
-    response = make_request_to_server('auth_service', '/get_ticket', request_payload)
+    [response, _] = make_request_to_server('auth_service', '/get_ticket', request_payload)
 
     payload = json.loads(utils.des_decrypt(response['payload'], password))
     tgs_password = payload['tgs_password']
@@ -72,7 +72,7 @@ def build_m1():
 def ticket_granting_service():
     global service_password, expire_at, service_ticket
     request_payload = build_m3()
-    response = make_request_to_server('ticket_granting_service', '/get_ticket', request_payload)
+    [response, _] = make_request_to_server('ticket_granting_service', '/get_ticket', request_payload)
 
     payload = json.loads(utils.des_decrypt(response['payload'], tgs_password))
     service_password = payload['service_password']
@@ -100,10 +100,15 @@ def resource_service():
     service_id = str(input('Desired service: '))
     desired_resource = str(input('Desired resource: '))
     request_payload = build_m5(desired_resource)
-    response = make_request_to_server('service_' + service_id, '/execute_action', request_payload)
+    [response, status_code] = make_request_to_server('service_' + service_id, '/execute_action', request_payload)
 
-    payload = json.loads(utils.des_decrypt(response['payload'], service_password))
-    print(payload['response'])
+    if status_code == 200:
+        payload = json.loads(utils.des_decrypt(response['payload'], service_password))
+        print(payload['response'])
+        return
+
+    if status_code == 400:
+        print(response['payload'])
 
 
 def build_m5(resource):
@@ -124,7 +129,7 @@ def make_request_to_server(target, request, request_content):
     url = resolve_target_address(target) + request
     response = requests.post(url, json=request_content)
 
-    return json.loads(response.text)
+    return [json.loads(response.text), response.status_code]
 
 
 def resolve_target_address(target):
